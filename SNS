@@ -1,0 +1,21 @@
+### CloudWatch Monitoring Alarms
+
+#### EC2 Status Check Alarm
+
+![EC2 Status Check Alarm](screenshots/07-status-check-alarm.png)
+
+**Alarm:** `ReliabilityLab-EC2-StatusCheck-Failed`
+
+Configured a CloudWatch alarm on `StatusCheckFailed_Instance` using a threshold of **≥ 1 for two consecutive 1-minute periods**. The alarm sends notifications to the `reliability-lab-alerts` SNS topic when an EC2 instance status check failure is detected.
+
+**Purpose:** Detect EC2 instance-level health failures and provide an operational alert for investigation and recovery.
+
+#### High CPU Alarm
+
+![High CPU Alarm](screenshots/08-high-cpu-alarm.png)
+
+**Alarm:** `ReliabilityLab-EC2-HighCPU`
+
+Configured a CloudWatch alarm on `CPUUtilization` using a threshold of **>80% for a 5-minute period**. The alarm sends notifications to the `reliability-lab-alerts` SNS topic when sustained high CPU utilization is detected.
+
+**Purpose:** Identify potential workload saturation or abnormal resource consumption before it affects application availability.
