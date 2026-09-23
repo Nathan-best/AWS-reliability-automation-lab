@@ -1,0 +1,251 @@
+# AWS Reliability & Automation Lab
+
+## Overview
+
+This project demonstrates the design and implementation of a reliability and automation workflow on AWS.
+
+The lab begins with a public Amazon Linux EC2 workload running Nginx and progressively adds monitoring, failure detection, automated remediation, recovery validation, and operational documentation.
+
+The project is designed to practice real-world cloud operations concepts including reliability engineering, monitoring, incident response, automation, security, and infrastructure as code.
+
+## Current Status
+
+### Phase 1 — EC2 Web Workload
+
+**Status: Completed**
+
+* Deployed an Amazon Linux EC2 instance
+* Used a `t3.micro` instance type
+* Deployed the instance in a public subnet
+* Enabled a public IPv4 address
+* Installed Nginx through EC2 User Data
+* Created a test webpage
+* Configured HTTP access on port 80
+* Restricted SSH access on port 22 to the administrator's IP address
+* Applied the tag `Project=ReliabilityLab`
+
+### Phase 2 — Cost Protection
+
+**Status: Completed**
+
+* Created an AWS Budget
+* Configured a `$5` monthly budget
+* Configured email notifications for budget thresholds
+
+## Architecture
+
+The initial workload is:
+
+```text
+Internet
+    |
+    | HTTP :80
+    v
+Security Group
+    |
+    v
+Public Subnet
+    |
+    v
+EC2 - Amazon Linux
+    |
+    v
+Nginx Web Server
+    |
+    v
+ReliabilityLab Web Page
+```
+
+The planned reliability architecture is:
+
+```text
+EC2 / Nginx
+     |
+     v
+CloudWatch
+     |
+     v
+EventBridge
+     |
+     v
+Lambda Automation
+     |
+     v
+Recovery Action
+```
+
+## AWS Services
+
+* Amazon EC2
+* Amazon VPC
+* Amazon CloudWatch
+* Amazon EventBridge
+* AWS Lambda
+* AWS IAM
+* AWS Budgets
+* AWS CLI
+* Terraform
+* Amazon Linux
+* Nginx
+
+## EC2 Configuration
+
+| Configuration    | Value                          |
+| ---------------- | ------------------------------ |
+| Operating System | Amazon Linux                   |
+| Instance Type    | t3.micro                       |
+| Deployment       | Public subnet                  |
+| Public IPv4      | Enabled                        |
+| Web Server       | Nginx                          |
+| HTTP             | TCP 80                         |
+| SSH              | TCP 22 — administrator IP only |
+| Project Tag      | `Project=ReliabilityLab`       |
+
+## User Data
+
+The EC2 instance automatically installs and starts Nginx during initial boot.
+
+```bash
+#!/bin/bash
+
+dnf update -y
+dnf install -y nginx
+
+systemctl enable nginx
+systemctl start nginx
+
+cat > /usr/share/nginx/html/index.html <<'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reliability Lab</title>
+</head>
+<body>
+    <h1>AWS Reliability & Automation Lab</h1>
+    <p>Nginx is running successfully.</p>
+    <p>Project: ReliabilityLab</p>
+</body>
+</html>
+EOF
+```
+
+## Security Configuration
+
+The EC2 security group uses:
+
+| Protocol | Port | Source              | Purpose               |
+| -------- | ---: | ------------------- | --------------------- |
+| HTTP     |   80 | `0.0.0.0/0`         | Public web access     |
+| SSH      |   22 | Administrator IP/32 | Administrative access |
+
+SSH is restricted to the administrator's IP rather than being exposed to the entire Internet.
+
+## Cost Protection
+
+An AWS Budget was created before deploying the workload.
+
+Configuration:
+
+```text
+Monthly Budget: $5
+Alerting: Email notification
+```
+
+The budget provides cost monitoring for the lab. It does not automatically terminate resources.
+
+## Validation
+
+### Nginx
+
+The Nginx service was verified using:
+
+```bash
+sudo systemctl status nginx
+```
+
+Expected status:
+
+```text
+active (running)
+```
+
+### Nginx Version
+
+```bash
+nginx -v
+```
+
+### Web Application
+
+The EC2 public IPv4 address was used to access:
+
+```text
+http://<EC2-PUBLIC-IP>
+```
+
+Expected result:
+
+```text
+AWS Reliability & Automation Lab
+
+Nginx is running successfully.
+
+Project: ReliabilityLab
+```
+
+## Evidence
+
+Screenshots documenting the deployment are stored in the `screenshots/` directory.
+
+### AWS Budget
+
+![AWS Budget](screenshots/01-budget-alert.png)
+
+### EC2 Instance
+
+![EC2 Instance](screenshots/02-ec2-instance.png)
+
+### Security Group
+
+![Security Group](screenshots/03-security-group.png)
+
+### Nginx Running
+
+![Nginx Running](screenshots/04-nginx-running.png)
+
+### Nginx Webpage
+
+![Nginx Webpage](screenshots/05-nginx-webpage.png)
+
+## Reliability Engineering Goals
+
+The next stages of the project will focus on:
+
+1. CloudWatch monitoring
+2. EC2 health monitoring
+3. CloudWatch alarms
+4. EventBridge event processing
+5. Lambda-based automation
+6. Automated recovery
+7. Recovery validation
+8. Operational runbooks
+9. Failure simulation
+10. Infrastructure as Code with Terraform
+
+## Lessons Learned
+
+This initial phase provided practical experience with:
+
+* EC2 deployment
+* Linux initialization
+* Nginx configuration
+* Security group configuration
+* Public/private networking concepts
+* SSH access restrictions
+* AWS budgeting
+* Automated instance configuration through User Data
+* Cloud operations documentation
+
+## Disclaimer
+
+This is a personal AWS portfolio project created for learning and demonstration purposes. Production deployment practices may require additional security, monitoring, access controls, testing, and operational safeguards.
